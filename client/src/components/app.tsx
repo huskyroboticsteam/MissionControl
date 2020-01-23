@@ -3,6 +3,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import openSocket from "../actions/socket/openSocket";
+import ControllerComponent from "./controller-component";
 
 const styles: any = (theme: Theme) => ({
   rawData: {
@@ -33,6 +34,7 @@ class App extends React.Component<AppProps> {
           {JSON.stringify(nominal)}
           {JSON.stringify(sensors)}
         </Typography>
+        <ControllerComponent />
       </div>
     );
   }
