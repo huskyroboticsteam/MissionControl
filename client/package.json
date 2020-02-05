@@ -51,7 +51,7 @@
     "redux": "^4.0.4",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
-    "svg-gauge": "^1.0.5",
+    "svg-gauge": "^1.0.6",
     "typescript": "^3.7.2"
   },
   "devDependencies": {

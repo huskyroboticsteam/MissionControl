@@ -3,6 +3,8 @@ import { UPDATE_SENSORS } from '../actions/sensors/types';
 const initialState = {
   data: {
     timestamp: 0,
+    quality: 33,
+    speed: 34,
   }
 };
 

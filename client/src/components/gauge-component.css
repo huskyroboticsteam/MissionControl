@@ -1,0 +1,24 @@
+  .gauge-container.two {
+    height: auto;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .gauge-container.two > .gauge > .dial {
+    stroke: #334455;
+    stroke-width: 10;
+  }
+  .gauge-container.two > .gauge > .value {
+    stroke: red;
+    stroke-dasharray: none;
+    stroke-width: 13;
+  }
+
+  .gauge-container.two > .value-text {
+    color: #000000;
+    position: absolute;
+    bottom: 30%;
+    right: 35%;
+    display: inline-block;
+  }
+  .gauge-container > .gauge > .value-text {
+    fill: #000000;
+  }

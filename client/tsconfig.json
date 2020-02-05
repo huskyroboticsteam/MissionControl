@@ -6,7 +6,7 @@
     ],
     "noImplicitAny": false,
     "noImplicitThis": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "jsx": "react",
     "target": "es5",
     "allowJs": true,
