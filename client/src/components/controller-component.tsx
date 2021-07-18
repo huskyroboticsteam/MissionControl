@@ -1,69 +1,95 @@
 import * as React from "react";
 import Gamepad from "react-gamepad";
+import { ArmMotor } from "../arm-motor";
 import { RoverCommands } from "../rover-commands";
 
-type ControllerProps = {};
+const DRIVER_GAMEPAD_INDEX = 0;
+const ARM_GAMEPAD_INDEX = 1;
 
-// Current forward/backward input from gamepad
-let forwardBackward: number = 0.0;
-// Current left/right input from gamepad
-let leftRight: number = 0.0;
-// Used to ensure that gamepad input does not interfere with keyboard input
-let gamepadInUse: boolean = false;
+let forwardBackward = 0.0;
+let leftRight = 0.0;
 
-class ControllerComponent extends React.Component<ControllerProps> {
-
+class ControllerComponent extends React.Component<{}, {}> {
   connectHandler(gamepadIndex: number) {
-    console.log(`Gamepad ${gamepadIndex} connected!`);
+    if (gamepadIndex === DRIVER_GAMEPAD_INDEX) {
+      console.log("Driver connected!");
+    } else if (gamepadIndex === ARM_GAMEPAD_INDEX) {
+      console.log("Arm operator connected!");
+    }
   }
 
   disconnectHandler(gamepadIndex: number) {
-    console.log(`Gamepad ${gamepadIndex} disconnected!`);
+    if (gamepadIndex === DRIVER_GAMEPAD_INDEX) {
+      console.log("Driver disconnected!");
+    } else if (gamepadIndex === ARM_GAMEPAD_INDEX) {
+      console.log("Arm operator disconnected!");
+    }
   }
 
-  buttonChangeHandler(buttonName: string, down: boolean) {
-    // TODO
+  armButtonChangeHandler(buttonName: string, down: boolean) {
+    let wristPower = 0;
+    if (buttonName === "DPadDown") {
+      if (down) {
+        wristPower = -1;
+      }
+    } else if (buttonName === "DPadUp") {
+      if (down) {
+        wristPower = 1;
+      }
+    }
+    RoverCommands.setMotorPower(ArmMotor.DIFF_LEFT, wristPower);
+    RoverCommands.setMotorPower(ArmMotor.DIFF_RIGHT, wristPower);
   }
 
-  axisChangeHandler(axisName: string, value: number, previousValue: number) {
+  driveAxisChangeHandler(axisName: string, value: number, previousValue: number) {
     if (axisName === "LeftStickY") {
       forwardBackward = value;
-      if (value !== 0.0) {
-        gamepadInUse = true;
-      }
     } else if (axisName === "RightStickX") {
       // negative leftRight causes clockwise rotation
       leftRight = -value;
-      if (value != 0.0) {
-        gamepadInUse = true;
-      }
     }
-    if (gamepadInUse) {
-      RoverCommands.setDrivePower(forwardBackward, leftRight);
-    }
-    if (forwardBackward === 0.0 && leftRight === 0.0) {
-      gamepadInUse = false;
-    }
+    RoverCommands.setDrivePower(forwardBackward, leftRight);
   }
 
-  buttonDownHandler(buttonName: string) {
-    // TODO
-  }
-
-  buttonUpHandler(buttonName: string) {
-    // TODO
+  armAxisChangeHandler(axisName: string, value: number, previousValue: number) {
+    if (axisName === "LeftStickX") {
+      RoverCommands.setMotorPower(ArmMotor.ARM_BASE, value);
+    } else if (axisName === "LeftStickY") {
+      RoverCommands.setMotorPower(ArmMotor.SHOULDER, value);
+    } else if (axisName === "RightStickX") {
+      RoverCommands.setMotorPower(ArmMotor.FOREARM, value);
+    } else if (axisName === "RightStickY") {
+      RoverCommands.setMotorPower(ArmMotor.ELBOW, value);
+    } else if (axisName === "LeftTrigger") {
+      RoverCommands.setMotorPower(ArmMotor.HAND, -value);
+    } else if (axisName === "RightTrigger") {
+      RoverCommands.setMotorPower(ArmMotor.HAND, value);
+    }
   }
 
   render() {
     return (
-      <Gamepad
-        onConnect={this.connectHandler}
-        onDisconnect={this.disconnectHandler}
-        onButtonChange={this.buttonChangeHandler}
-        onAxisChange={this.axisChangeHandler}
-      >
-        <div></div>
-      </Gamepad>
+      <div>
+        { /* Drive gamepad */}
+        <Gamepad
+          gamepadIndex={DRIVER_GAMEPAD_INDEX}
+          onConnect={this.connectHandler}
+          onDisconnect={this.disconnectHandler}
+          onAxisChange={this.driveAxisChangeHandler}
+        >
+          <div></div>
+        </Gamepad>
+        { /* Arm gamepad */}
+        <Gamepad
+          gamepadIndex={ARM_GAMEPAD_INDEX}
+          onConnect={this.connectHandler}
+          onDisconnect={this.disconnectHandler}
+          onButtonChange={this.armButtonChangeHandler}
+          onAxisChange={this.armAxisChangeHandler}
+        >
+          <div></div>
+        </Gamepad>
+      </div>
     );
   }
 }
